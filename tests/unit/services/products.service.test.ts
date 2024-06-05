@@ -2,7 +2,7 @@ import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
 import sinon from 'sinon';
 import app from '../../../src/app';
-import ProductService from '../../../src/services/product.service';
+import * as ProductService from '../../../src/services/product.service';
 import { productInput } from '../../mocks/products.mock';
 
 chai.use(chaiHttp);
