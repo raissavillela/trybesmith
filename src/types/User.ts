@@ -7,7 +7,7 @@ export type User = {
   productIds?: number;
 };
 
-export type UserProduct = {
-  username: string,
-  productIds: number[]
+export type UserWithProducts = {
+  username: string;
+  productIds: number[];
 };

@@ -1,28 +1,25 @@
-import UserModel, { UserSequelizeModel } from '../database/models/user.model';
-import { UserProduct } from '../types/User';
+import ProductModel from '../database/models/product.model';
+import UserModel from '../database/models/user.model';
+import { ServiceResponse } from '../types/ServiceResponse';
+import { UserWithProducts } from '../types/User';
 
-const list = async (): Promise<{ status: number, data: UserProduct[] }> => {
-  const usuarios: UserSequelizeModel[] = await UserModel.findAll({
-    include: 'productIds',
-  });
+const findAllUsers = async (): Promise<ServiceResponse<UserWithProducts[]>> => {
+  const usersFromDB = await UserModel.findAll();
+  const usersArray = usersFromDB.map((user) => user.dataValues);
 
-  const listU: UserProduct[] = usuarios.map((user: UserSequelizeModel) => {
-    const username = user.getDataValue('username');
-    const productIds = user.getDataValue('productIds');
+  const usersWithTheirProducts = await Promise.all(usersArray.map(async (user) => {
+    const productsFromDB = await ProductModel.findAll({ where: { userId: user.id } });
+    const productsArray = productsFromDB.map((product) => product.dataValues.id);
 
-    if (!username || !Array.isArray(productIds)) {
-      return { username: '', productIds: [] };
-    }
-
-    return {
-      username: username as string,
-      productIds: productIds.map((product: { id: number }) => product.id),
+    const userWithProducts = {
+      username: user.username,
+      productIds: productsArray,
     };
-  });
-
-  return { status: 200, data: listU };
+    return userWithProducts;
+  }));
+  return { status: 'SUCCESS', data: usersWithTheirProducts };
 };
 
 export default {
-  list,
+  findAllUsers,
 };

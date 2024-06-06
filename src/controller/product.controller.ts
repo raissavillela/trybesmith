@@ -1,18 +1,21 @@
 import { Request, Response } from 'express';
-import { createProducts, findAllProducts } from '../service/product.service';
+import productService from '../service/product.service';
+import mapStatusHTTP from '../utils/statusHTTP';
 
-async function createProduct(req: Request, res: Response): Promise<void> {
-  const { name, price, userId } = req.body;
-  const products = await createProducts({ name, price, userId });
-  res.status(201).json(products);
+async function allProducts(req: Request, res: Response): Promise<Response> {
+  const newProduct = req.body;
+  const serviceResponse = await productService.addProduct(newProduct);
+
+  return res.status(mapStatusHTTP(serviceResponse.status)).json(serviceResponse.data);
 }
 
-async function allProducts(_req: Request, res: Response): Promise<void> {
-  const products = await findAllProducts();
-  res.status(200).json(products.data);
+async function respondListProducts(_req: Request, res: Response): Promise<Response> {
+  const serviceResponse = await productService.findAllProducts();
+
+  return res.status(mapStatusHTTP(serviceResponse.status)).json(serviceResponse.data);
 }
 
 export default {
-  createProduct,
   allProducts,
+  respondListProducts,
 };
