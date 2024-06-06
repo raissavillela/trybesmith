@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { createProducts, findAllProducts } from '../services/product.service';
+import { createProducts, findAllProducts } from '../service/product.service';
 
 async function createProduct(req: Request, res: Response): Promise<void> {
   const { name, price, userId } = req.body;
